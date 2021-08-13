@@ -25,12 +25,11 @@ class SplashScreenActivity : AppCompatActivity() {
     private fun setTimerAndOpenHomeActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(SPLASH_SCREEN_TIME)
-            Toast.makeText(this@SplashScreenActivity, "hahahaahahahah", Toast.LENGTH_SHORT).show()
-//        startActivity(
-//            Intent(this, HomeActivity::class.java).apply {
-//                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-//            }
-//        )
+            startActivity(
+                Intent(this@SplashScreenActivity, HomeActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            )
         }
     }
 

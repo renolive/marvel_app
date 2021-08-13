@@ -1,5 +1,6 @@
 package com.example.android.core.newtwork
 
+import com.example.android.core.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -8,12 +9,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object NetworkService {
-
-    private lateinit var baseUrl: String
-
-    fun configure(baseUrl: String) {
-        this.baseUrl = baseUrl
-    }
 
     // Using Moshi as JSON converter
     private val moshi = Moshi.Builder()
@@ -25,7 +20,7 @@ object NetworkService {
     private val client = OkHttpClient.Builder().addInterceptor(logging).build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
+        .baseUrl(BuildConfig.BASE_URL)
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

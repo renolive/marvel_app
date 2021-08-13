@@ -1,0 +1,7 @@
+def properties = new Properties()
+properties.load(rootProject.file("local.properties").newDataInputStream())
+
+android.defaultConfig {
+    buildConfigField "String", "PUBLIC_KEY", properties['PUBLIC_KEY']
+    buildConfigField "String", "PRIVATE_KEY", properties['PRIVATE_KEY']
+}
