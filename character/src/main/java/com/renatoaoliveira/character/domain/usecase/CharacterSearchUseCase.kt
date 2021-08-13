@@ -4,13 +4,12 @@ import com.renatoaoliveira.character.domain.model.CharacterList
 import com.renatoaoliveira.character.domain.repository.CharacterResult
 import com.renatoaoliveira.character.domain.repository.ICharacterRepository
 
-class CharacterListUseCase(
-    private val repository: ICharacterRepository
-) : ICharacterListUseCase {
+class CharacterSearchUseCase(private val repository: ICharacterRepository) :
+    ICharacterSearchUseCase {
 
-    override suspend fun execute(offset: Int): CharacterResult<CharacterList> =
+    override suspend fun execute(offset: Int, query: String): CharacterResult<CharacterList> =
         try {
-            repository.getCharactersList(offset)
+            repository.searchCharacters(offset, query)
         } catch (e: Exception) {
             CharacterResult(
                 data = CharacterList(-1, -1, -1, emptyList()),

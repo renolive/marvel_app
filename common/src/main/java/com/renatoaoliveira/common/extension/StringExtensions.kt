@@ -1,4 +1,4 @@
-package com.renatoaoliveira.character.utils
+package com.renatoaoliveira.common.extension
 
 import java.security.MessageDigest
 

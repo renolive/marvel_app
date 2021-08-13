@@ -1,43 +1,63 @@
 package com.renatoaoliveira.character.data.repository
 
 import com.example.android.core.BuildConfig
-import com.renatoaoliveira.character.data.api.CharactersServiceAPI
-import com.renatoaoliveira.character.data.model.mapper.mapToModel
+import com.renatoaoliveira.character.data.mapper.mapToEntity
+import com.renatoaoliveira.character.data.mapper.mapToModel
+import com.renatoaoliveira.character.data.repository.local.dao.CharacterFavoriteDao
+import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
+import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.domain.model.CharacterList
 import com.renatoaoliveira.character.domain.repository.CharacterResult
 import com.renatoaoliveira.character.domain.repository.ICharacterRepository
-import com.renatoaoliveira.character.utils.digestMD5
+import com.renatoaoliveira.common.extension.digestMD5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class CharacterRepository(
-    val charactersServiceAPI: CharactersServiceAPI
+    private val characterServiceAPI: CharacterServiceAPI,
+    private val characterFavoriteDao: CharacterFavoriteDao
 ) : ICharacterRepository {
     private val apikey = BuildConfig.PUBLIC_KEY
     private val privateApikey = BuildConfig.PRIVATE_KEY
     private var timeStamp: Long = 0L
     private var hash: String = ""
 
+    override suspend fun saveCharacterAsFavorite(character: Character) =
+        withContext(Dispatchers.IO) {
+            characterFavoriteDao.insertCharacterFavorite(character.mapToEntity())
+            println("### DB ${character.mapToEntity()}")
+        }
+
     override suspend fun getCharactersList(offset: Int): CharacterResult<CharacterList> =
         withContext(Dispatchers.IO) {
-            try {
-                charactersServiceAPI.getCharactersList(getQueryParams(offset)).run {
-                    CharacterResult(
-                        body()?.data.mapToModel(),
-                        code(),
-                        message(),
-                        isSuccessful
-                    )
-                }
-            } catch (e: Exception) {
+            characterServiceAPI.getCharactersList(getQueryParams(offset)).run {
                 CharacterResult(
-                    CharacterList(0, 0, 0, emptyList()),
-                    0,
-                    e.message.orEmpty(),
-                    false
+                    body()?.data.mapToModel(),
+                    code(),
+                    message(),
+                    isSuccessful
                 )
             }
         }
+
+    override suspend fun searchCharacters(
+        offset: Int,
+        query: String
+    ): CharacterResult<CharacterList> =
+        withContext(Dispatchers.IO) {
+            characterServiceAPI.searchCharacters(getSearchQueryParams(offset, query)).run {
+                CharacterResult(
+                    body()?.data.mapToModel(),
+                    code(),
+                    message(),
+                    isSuccessful
+                )
+            }
+        }
+
+    private fun updateHash() {
+        hash = HASH_TEMPLATE.format(timeStamp, privateApikey, apikey).digestMD5()
+    }
 
     private fun getQueryParams(offset: Int): Map<String, String> {
         timeStamp += 1L
@@ -51,8 +71,10 @@ class CharacterRepository(
         )
     }
 
-    private fun updateHash() {
-        hash = HASH_TEMPLATE.format(timeStamp, privateApikey, apikey).digestMD5()
+    private fun getSearchQueryParams(offset: Int, query: String): Map<String, String> {
+        return getQueryParams(offset).toMutableMap().apply {
+            put(SEARCH_QUERY_NAME, query)
+        }
     }
 
     companion object {
@@ -61,5 +83,6 @@ class CharacterRepository(
         const val API_KEY_QUERY_NAME = "apikey"
         const val HASH_QUERY_NAME = "hash"
         const val OFFSET_QUERY_NAME = "offset"
+        const val SEARCH_QUERY_NAME = "nameStartsWith"
     }
 }
