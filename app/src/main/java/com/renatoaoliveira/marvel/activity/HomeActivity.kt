@@ -11,8 +11,13 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        viewModel.fetchList()
+        viewModel.fetchList()
         viewModel.searchCharacter("spider")
+
+        viewModel.characterSearchList.observe(this) {
+            if (it is CharactersListViewModel.CharacterSearchListState.Success)
+                viewModel.favoriteCharacter(it.characters.first())
+        }
 
         viewModel.characterList.observe(this) {
             if (it is CharactersListViewModel.CharacterListState.Success)

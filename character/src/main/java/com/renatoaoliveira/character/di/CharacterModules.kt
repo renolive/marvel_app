@@ -1,11 +1,10 @@
 package com.renatoaoliveira.character.di
 
-import android.content.Context
-import androidx.room.Room
 import com.example.android.core.newtwork.NetworkService
-import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
+import com.example.android.core.newtwork.provideDatabase
 import com.renatoaoliveira.character.data.repository.CharacterRepository
 import com.renatoaoliveira.character.data.repository.local.CharacterDatabase
+import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
 import com.renatoaoliveira.character.domain.repository.ICharacterRepository
 import com.renatoaoliveira.character.domain.usecase.*
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
@@ -21,7 +20,7 @@ val characterModules = module {
     /**
      * Database
      */
-    single { provideCharacterDatabase(androidContext()) }
+    single { provideDatabase<CharacterDatabase>(androidContext(), "character_database") }
 
     /**
      * Repository
@@ -45,12 +44,3 @@ val characterModules = module {
      */
     factory { CharactersListViewModel(get(), get(), get()) }
 }
-
-private fun provideCharacterDatabase(context: Context): CharacterDatabase =
-    Room.databaseBuilder(
-        context.applicationContext,
-        CharacterDatabase::class.java,
-        "character_database"
-    )
-        .fallbackToDestructiveMigration()
-        .build()

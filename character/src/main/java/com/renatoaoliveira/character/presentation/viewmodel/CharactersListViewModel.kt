@@ -22,6 +22,9 @@ class CharactersListViewModel(
     private val _characterList = MutableLiveData<CharacterListState>()
     val characterList: LiveData<CharacterListState> get() = _characterList
 
+    private val _characterSearchList = MutableLiveData<CharacterSearchListState>()
+    val characterSearchList: LiveData<CharacterSearchListState> get() = _characterSearchList
+
     private val _characterFavorite = MutableLiveData<CharacterFavoriteState>()
     val characterFavorite: LiveData<CharacterFavoriteState> get() = _characterFavorite
 
@@ -44,16 +47,16 @@ class CharactersListViewModel(
     }
 
     fun searchCharacter(query: String, isFirstPage: Boolean = true) {
-        _characterList.value = CharacterListState.Loading
+        _characterSearchList.value = CharacterSearchListState.Loading
         viewModelScope.launch {
             if (isFirstPage) characterListOffset = 0
             val res = characterSearchUseCase.execute(characterListOffset, query)
 
-            _characterList.value = if (res.success) {
+            _characterSearchList.value = if (res.success) {
                 characterListOffset += res.data.count
-                CharacterListState.Success(res.data.list)
+                CharacterSearchListState.Success(res.data.list)
             } else {
-                CharacterListState.Error
+                CharacterSearchListState.Error
             }
 
             println("### Search " + res.data.count + res.data.list)
@@ -65,7 +68,7 @@ class CharactersListViewModel(
             try {
                 characterAddFavoriteUseCase.execute(character)
             } catch (e: Exception) {
-                Timber.e(e, "Erro ao salvar favorito")
+                Timber.e(e, "Um erro ocorreu ao favoritar personagem")
                 _characterFavorite.value = CharacterFavoriteState.Error
             }
         }
@@ -73,6 +76,10 @@ class CharactersListViewModel(
 
     fun resetCharacterList() {
         _characterList.value = CharacterListState.Idle
+    }
+
+    fun resetCharacterSearchList() {
+        _characterSearchList.value = CharacterSearchListState.Idle
     }
 
     fun resetCharacterFavorite() {
@@ -84,6 +91,13 @@ class CharactersListViewModel(
         object Idle : CharacterListState()
         object Error : CharacterListState()
         data class Success(val characters: List<Character>) : CharacterListState()
+    }
+
+    sealed class CharacterSearchListState {
+        object Loading : CharacterSearchListState()
+        object Idle : CharacterSearchListState()
+        object Error : CharacterSearchListState()
+        data class Success(val characters: List<Character>) : CharacterSearchListState()
     }
 
     sealed class CharacterFavoriteState {
