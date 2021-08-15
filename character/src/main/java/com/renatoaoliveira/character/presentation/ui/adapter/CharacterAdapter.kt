@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.renatoaoliveira.character.databinding.ViewHolderCharacterBinding
-import com.renatoaoliveira.character.presentation.ui.viewholder.CharacterViewHolder
 import com.renatoaoliveira.character.presentation.model.CharacterVO
-import com.renatoaoliveira.character.presentation.ui.OnClickFavoriteListener
+import com.renatoaoliveira.character.presentation.ui.CharacterViewHolderListener
+import com.renatoaoliveira.character.presentation.ui.viewholder.CharacterViewHolder
 
-class CharacterAdapter(private val favoriteListener: OnClickFavoriteListener) :
+class CharacterAdapter(private val viewHolderListener: CharacterViewHolderListener) :
     ListAdapter<CharacterVO, CharacterViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
@@ -22,7 +22,7 @@ class CharacterAdapter(private val favoriteListener: OnClickFavoriteListener) :
     }
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) =
-        holder.bind(getItem(position), favoriteListener)
+        holder.bind(getItem(position), viewHolderListener)
 
     companion object {
         private val diffUtilCallback = object : DiffUtil.ItemCallback<CharacterVO>() {

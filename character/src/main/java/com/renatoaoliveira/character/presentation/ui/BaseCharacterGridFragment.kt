@@ -23,7 +23,7 @@ import com.renatoaoliveira.common.connection.checkConnectivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_list),
-    OnClickFavoriteListener {
+    CharacterViewHolderListener {
 
     protected abstract val viewModel: ViewModel
     protected val favoriteViewModel: CharacterFavoritesViewModel by viewModel()
@@ -130,7 +130,11 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
         return map { it.mapToVO(it.id in favoriteIdList) }
     }
 
-    override fun OnClick(characterVO: CharacterVO) {
+    override fun OnClickFavorite(characterVO: CharacterVO) {
         favoriteViewModel.onFavoriteClick(characterVO.mapToModel(), !characterVO.isFavorite)
+    }
+
+    override fun OnViewHolderClick(character: CharacterVO) {
+        startActivity(CharacterDetailsActivity.newIntent(requireContext(), character))
     }
 }

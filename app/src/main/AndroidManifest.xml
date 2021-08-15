@@ -15,8 +15,8 @@
 
         <activity
             android:name=".activity.SplashScreenActivity"
-            android:theme="@style/Theme.Marvel.FullScreen"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Marvel.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

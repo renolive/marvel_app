@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/character_detail_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerInside"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/black_panther" />
+
+    <TextView
+        android:id="@+id/character_detail_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:gravity="center"
+        android:padding="@dimen/pixel_8"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="@dimen/detail_title_size"
+        android:textStyle="bold"
+        android:text="@string/detail_title_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_detail_image"
+        tools:text="Black Panther" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_detail_title">
+
+        <TextView
+            android:id="@+id/character_detail_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="@dimen/pixel_8"
+            android:text="-- No Description Available --"
+            android:textSize="@dimen/detail_description_size"
+            tools:text="Onslaught was written as a sentient psionic entity created from the consciousness of two mutants: Professor Charles Xavier and Magneto. During a battle between the X-Men and Magneto's Acolytes, Professor Xavier used his telepathic powers to shut down Magneto's mind, rendering him catatonic. It was explained through the Onslaught crossover series that the darkest aspect of Magneto's mind escaped into Xavier's subconscious, where it with Xavier's own darker nature to eventually grow into a separate persona of its own." />
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

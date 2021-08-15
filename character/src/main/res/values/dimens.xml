@@ -7,10 +7,14 @@
     <!--CardView-->
     <dimen name="card_view_corner">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
-    <dimen name="card_view_title_size">8pt</dimen>
+    <dimen name="card_view_title_size">20sp</dimen>
 
     <!--BottomStatus-->
     <dimen name="bottom_loading_size">32dp</dimen>
     <dimen name="bottom_status_text_size">16sp</dimen>
+
+    <!--Detail-->
+    <dimen name="detail_title_size">32sp</dimen>
+    <dimen name="detail_description_size">12sp</dimen>
 
 </resources>

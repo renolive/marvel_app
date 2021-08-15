@@ -6,14 +6,15 @@ import com.bumptech.glide.Glide
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.databinding.ViewHolderCharacterBinding
 import com.renatoaoliveira.character.presentation.model.CharacterVO
+import com.renatoaoliveira.character.presentation.ui.CharacterViewHolderListener
 import com.renatoaoliveira.character.presentation.ui.OnClickFavoriteListener
 
 class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: CharacterVO, listener: OnClickFavoriteListener) {
+    fun bind(item: CharacterVO, listener: CharacterViewHolderListener) {
         with(binding) {
-            favoriteIcon.setOnClickListener { listener.OnClick(item) }
+            favoriteIcon.setOnClickListener { listener.OnClickFavorite(item) }
             if (item.isFavorite) {
                 favoriteIcon.background =
                     ResourcesCompat.getDrawable(
@@ -23,11 +24,12 @@ class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
                     )
             }
 
-            this.characterName.text = item.name
+            characterName.text = item.name
 
+            characterImage.setOnClickListener { listener.OnViewHolderClick(item) }
             Glide.with(itemView.context)
 //                .load(item.thumbnailUrl)
-                    //TODO remover
+                //TODO remover
                 .load("")
                 .centerCrop()
                 .placeholder(R.drawable.iron_man_placeholder)
