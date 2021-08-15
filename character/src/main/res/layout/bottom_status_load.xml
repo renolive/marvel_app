@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_status_loading"
+    style="?android:attr/progressBarStyleLarge"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_loading_size"
+    android:layout_marginTop="@dimen/pixel_8"
+    android:layout_marginBottom="@dimen/pixel_8"
+    android:indeterminate="true"
+    android:indeterminateTint="?attr/colorPrimary"
+    android:visibility="visible"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />

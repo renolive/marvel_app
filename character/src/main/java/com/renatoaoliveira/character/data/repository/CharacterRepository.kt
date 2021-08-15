@@ -4,6 +4,7 @@ import com.example.android.core.BuildConfig
 import com.renatoaoliveira.character.data.mapper.mapToEntity
 import com.renatoaoliveira.character.data.mapper.mapToModel
 import com.renatoaoliveira.character.data.repository.local.dao.CharacterFavoriteDao
+import com.renatoaoliveira.character.data.repository.local.entity.CharacterFavoriteEntity
 import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
 import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.domain.model.CharacterList
@@ -11,6 +12,9 @@ import com.renatoaoliveira.character.domain.repository.CharacterResult
 import com.renatoaoliveira.character.domain.repository.ICharacterRepository
 import com.renatoaoliveira.common.extension.digestMD5
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 
 class CharacterRepository(
@@ -22,12 +26,27 @@ class CharacterRepository(
     private var timeStamp: Long = 0L
     private var hash: String = ""
 
+    //region Database
     override suspend fun saveCharacterAsFavorite(character: Character) =
         withContext(Dispatchers.IO) {
             characterFavoriteDao.insertCharacterFavorite(character.mapToEntity())
-            println("### DB ${character.mapToEntity()}")
         }
 
+    override suspend fun deleteCharacterFromFavorite(character: Character) =
+        withContext(Dispatchers.IO) {
+            characterFavoriteDao.deleteCharacterFavorite(character.mapToEntity())
+        }
+
+    override fun getCharacterFavorites(): Flow<List<Character>> =
+        characterFavoriteDao.getCharacterFavorites()
+            .flowOn(Dispatchers.IO)
+            .transform { list ->
+                list.map { entity -> entity.mapToModel() }
+            }
+
+    //endregion
+
+    //region WebService
     override suspend fun getCharactersList(offset: Int): CharacterResult<CharacterList> =
         withContext(Dispatchers.IO) {
             characterServiceAPI.getCharactersList(getQueryParams(offset)).run {
@@ -54,11 +73,13 @@ class CharacterRepository(
                 )
             }
         }
+    //endregion
 
     private fun updateHash() {
         hash = HASH_TEMPLATE.format(timeStamp, privateApikey, apikey).digestMD5()
     }
 
+    @Synchronized
     private fun getQueryParams(offset: Int): Map<String, String> {
         timeStamp += 1L
         updateHash()

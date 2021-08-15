@@ -2,26 +2,40 @@ package com.renatoaoliveira.marvel.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.renatoaoliveira.character.presentation.ui.HomeCharactersGridFragment
+import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
+import com.renatoaoliveira.marvel.R
+import com.renatoaoliveira.marvel.databinding.ActivityHomeBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
 
-    val viewModel: CharactersListViewModel by viewModel()
+    private lateinit var homeBinding: ActivityHomeBinding
+
+    private val homeCharactersGridFragment = HomeCharactersGridFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.fetchList()
-        viewModel.searchCharacter("spider")
 
-        viewModel.characterSearchList.observe(this) {
-            if (it is CharactersListViewModel.CharacterSearchListState.Success)
-                viewModel.favoriteCharacter(it.characters.first())
-        }
+        homeBinding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(homeBinding.root)
 
-        viewModel.characterList.observe(this) {
-            if (it is CharactersListViewModel.CharacterListState.Success)
-                viewModel.favoriteCharacter(it.characters.first())
+        loadHomeFragment()
+    }
+
+    private fun loadHomeFragment() {
+        loadFragment(homeCharactersGridFragment)
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(homeBinding.fragmentContainerView.id, fragment)
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                addToBackStack("")
+            }
+            commit()
         }
     }
 }

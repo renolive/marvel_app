@@ -10,11 +10,13 @@ import com.renatoaoliveira.character.domain.usecase.ICharacterListUseCase
 import com.renatoaoliveira.character.domain.usecase.ICharacterSearchUseCase
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 class CharactersListViewModel(
     private val characterListUseCase: ICharacterListUseCase,
     private val characterSearchUseCase: ICharacterSearchUseCase,
-    private val characterAddFavoriteUseCase: ICharacterAddFavoriteUseCase
+    private val characterAddFavoriteUseCase: ICharacterAddFavoriteUseCase,
+    private val dispatcher: CoroutineContext
 ) : ViewModel() {
 
     private var characterListOffset = 0
@@ -30,7 +32,7 @@ class CharactersListViewModel(
 
     fun fetchList(isFirstPage: Boolean = true) {
         _characterList.value = CharacterListState.Loading
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             if (isFirstPage) characterListOffset = 0
 
             val res = characterListUseCase.execute(characterListOffset)
@@ -48,7 +50,7 @@ class CharactersListViewModel(
 
     fun searchCharacter(query: String, isFirstPage: Boolean = true) {
         _characterSearchList.value = CharacterSearchListState.Loading
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             if (isFirstPage) characterListOffset = 0
             val res = characterSearchUseCase.execute(characterListOffset, query)
 
@@ -64,7 +66,7 @@ class CharactersListViewModel(
     }
 
     fun favoriteCharacter(character: Character) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             try {
                 characterAddFavoriteUseCase.execute(character)
             } catch (e: Exception) {

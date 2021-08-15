@@ -7,7 +7,9 @@ import com.renatoaoliveira.character.data.repository.local.CharacterDatabase
 import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
 import com.renatoaoliveira.character.domain.repository.ICharacterRepository
 import com.renatoaoliveira.character.domain.usecase.*
+import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
+import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -38,9 +40,12 @@ val characterModules = module {
     factory<ICharacterListUseCase> { CharacterListUseCase(get()) }
     factory<ICharacterSearchUseCase> { CharacterSearchUseCase(get()) }
     factory<ICharacterAddFavoriteUseCase> { CharacterAddFavoriteUseCase(get()) }
+    factory<ICharacterRemoveFavoriteUseCase> { CharacterRemoveFavoriteUseCase(get()) }
+    factory<ICharacterGetFavoritesUseCase> { CharacterGetFavoritesUseCase(get()) }
 
     /**
      * ViewModel
      */
-    factory { CharactersListViewModel(get(), get(), get()) }
+    factory { CharactersListViewModel(get(), get(), get(), Dispatchers.Main) }
+    factory { CharacterFavoritesViewModel(get(), get(), Dispatchers.Main) }
 }
