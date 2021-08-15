@@ -8,6 +8,7 @@ import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.domain.usecase.ICharacterAddFavoriteUseCase
 import com.renatoaoliveira.character.domain.usecase.ICharacterListUseCase
 import com.renatoaoliveira.character.domain.usecase.ICharacterSearchUseCase
+import com.renatoaoliveira.character.presentation.mapper.mapToVO
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext

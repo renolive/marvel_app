@@ -39,10 +39,11 @@ class CharacterRepository(
 
     override fun getCharacterFavorites(): Flow<List<Character>> =
         characterFavoriteDao.getCharacterFavorites()
-            .flowOn(Dispatchers.IO)
             .transform { list ->
-                list.map { entity -> entity.mapToModel() }
+                val transformedList: List<Character> = list.map { entity -> entity.mapToModel() }
+                emit(transformedList)
             }
+            .flowOn(Dispatchers.IO)
 
     //endregion
 

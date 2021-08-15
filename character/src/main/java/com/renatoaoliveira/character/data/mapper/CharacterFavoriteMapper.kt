@@ -7,6 +7,5 @@ fun Character.mapToEntity(): CharacterFavoriteEntity = CharacterFavoriteEntity(
     id = id,
     name = name,
     description = description,
-    thumbnailPath = thumbnailPath,
-    thumbnailExtension = thumbnailExtension
+    thumbnailUrl = thumbnailUrl
 )

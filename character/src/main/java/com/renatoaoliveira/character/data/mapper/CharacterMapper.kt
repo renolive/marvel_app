@@ -8,14 +8,12 @@ fun CharacterResponse.mapToModel(): Character = Character(
     id = id,
     name = name,
     description = description,
-    thumbnailPath = thumbnail.path,
-    thumbnailExtension = thumbnail.extension
+    thumbnailUrl = thumbnail.path.replace("http", "https") + "." + thumbnail.extension
 )
 
 fun CharacterFavoriteEntity.mapToModel(): Character = Character(
     id = id,
     name = name,
     description = description,
-    thumbnailPath = thumbnailPath,
-    thumbnailExtension = thumbnailExtension
+    thumbnailUrl = thumbnailUrl
 )

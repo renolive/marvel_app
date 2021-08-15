@@ -7,7 +7,7 @@
     <!--CardView-->
     <dimen name="card_view_corner">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
-    <dimen name="card_view_title">12pt</dimen>
+    <dimen name="card_view_title_size">8pt</dimen>
 
     <!--BottomStatus-->
     <dimen name="bottom_loading_size">32dp</dimen>

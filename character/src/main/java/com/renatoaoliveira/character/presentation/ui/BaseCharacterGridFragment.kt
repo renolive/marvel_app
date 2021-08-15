@@ -10,19 +10,30 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.databinding.BottomStatusLoadBinding
 import com.renatoaoliveira.character.databinding.FragmentCharacterListBinding
+import com.renatoaoliveira.character.domain.model.Character
+import com.renatoaoliveira.character.presentation.mapper.mapToModel
+import com.renatoaoliveira.character.presentation.mapper.mapToVO
 import com.renatoaoliveira.character.presentation.ui.adapter.BottomAdapter
 import com.renatoaoliveira.character.presentation.ui.adapter.CharacterAdapter
 import com.renatoaoliveira.character.presentation.ui.decorator.CharacterItemDecorator
+import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel
+import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel.CharacterFavoriteState
+import com.renatoaoliveira.character.presentation.model.CharacterVO
 import com.renatoaoliveira.common.connection.checkConnectivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_list) {
+abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_list),
+    OnClickFavoriteListener {
 
     protected abstract val viewModel: ViewModel
+    protected val favoriteViewModel: CharacterFavoritesViewModel by viewModel()
+
+    private var favoriteIdList: List<Int> = emptyList()
 
     protected var binding: FragmentCharacterListBinding? = null
     protected var bottomStatusBinding: BottomStatusLoadBinding? = null
 
-    protected val characterAdapter = CharacterAdapter()
+    protected val characterAdapter = CharacterAdapter(this)
     protected val bottomAdapter = BottomAdapter()
     protected val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
 
@@ -32,6 +43,7 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
         }
 
         configureView()
+        configureObservers()
     }
 
     override fun onDestroyView() {
@@ -55,6 +67,24 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
         }
     }
 
+    private fun configureObservers() {
+        favoriteViewModel.characterFavorites.observe(
+            viewLifecycleOwner,
+            ::observeCharacterFavoritesState
+        )
+    }
+
+    private fun observeCharacterFavoritesState(state: CharacterFavoriteState) {
+        when (state) {
+            is CharacterFavoriteState.Success -> {
+                favoriteIdList = state.list.map { it.id }
+            }
+            else -> {
+                // Do nothing
+            }
+        }
+    }
+
     protected fun onError() {
         if (checkConnectivity(requireContext())) showErrorScreen() else showOfflineErrorScreen()
     }
@@ -65,7 +95,6 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
             loadingScreenInclude.isVisible = false
             errorOfflineScreenInclude.isVisible = false
             errorScreenInclude.isVisible = true
-
         }
     }
 
@@ -94,5 +123,14 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
             errorOfflineScreenInclude.isVisible = false
             loadingScreenInclude.isVisible = false
         }
+
+    }
+
+    protected fun List<Character>.mapToVO(): List<CharacterVO> {
+        return map { it.mapToVO(it.id in favoriteIdList) }
+    }
+
+    override fun OnClick(characterVO: CharacterVO) {
+        favoriteViewModel.onFavoriteClick(characterVO.mapToModel(), !characterVO.isFavorite)
     }
 }

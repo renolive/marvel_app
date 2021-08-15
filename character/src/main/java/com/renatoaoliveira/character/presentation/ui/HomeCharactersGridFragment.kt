@@ -2,7 +2,6 @@ package com.renatoaoliveira.character.presentation.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.presentation.ui.adapter.BottomAdapter
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
@@ -17,12 +16,12 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fetchFirstCharacters()
-        configureObservers()
+        configureHomeObservers()
     }
 
     private fun fetchFirstCharacters() = viewModel.fetchList()
 
-    private fun configureObservers() {
+    private fun configureHomeObservers() {
         with(viewModel) {
             characterList.observe(viewLifecycleOwner, ::observeCharactersListState)
             characterSearchList.observe(viewLifecycleOwner, ::observeCharactersListState)
@@ -49,7 +48,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment() {
     }
 
     private fun updateCharacterList(characterList: List<Character>) {
-        characterAdapter.submitList(characterList)
+        characterAdapter.submitList(characterList.mapToVO())
         bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.LOADING)
     }
 
