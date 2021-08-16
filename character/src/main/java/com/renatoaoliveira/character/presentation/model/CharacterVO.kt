@@ -9,5 +9,5 @@ data class CharacterVO(
     val name: String,
     val description: String,
     val thumbnailUrl: String,
-    val isFavorite: Boolean = true
+    var isFavorite: Boolean = true
 ) : Parcelable

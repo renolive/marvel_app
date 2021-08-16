@@ -3,4 +3,5 @@
     <string name="bottom_error_text">Ocorreu um erro inesperado durante o processo. Por favor, tente novamente mais tarde.</string>
     <string name="bottom_offline_text">Parece que você está offline. Por favor, verifique sua conexão e tente novamente.</string>
     <string name="detail_title_placeholder">Unknown</string>
+    <string name="no_description_available">-- No Description Available --</string>
 </resources>

@@ -3,6 +3,8 @@
     <!--General-->
     <dimen name="pixel_8">8dp</dimen>
     <dimen name="pixel_4">4dp</dimen>
+    <dimen name="pixel_12">12dp</dimen>
+    <dimen name="pixel_16">16dp</dimen>
 
     <!--CardView-->
     <dimen name="card_view_corner">8dp</dimen>
@@ -15,6 +17,8 @@
 
     <!--Detail-->
     <dimen name="detail_title_size">32sp</dimen>
-    <dimen name="detail_description_size">12sp</dimen>
+    <dimen name="detail_description_size">20sp</dimen>
+    <dimen name="detail_favorite_size">64sp</dimen>
+    <dimen name="detail_arrow_back_size">48sp</dimen>
 
 </resources>

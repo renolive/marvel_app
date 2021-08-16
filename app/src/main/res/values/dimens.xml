@@ -3,6 +3,5 @@
     <!--Fonts-->
     <dimen name="splash_screen_title_size">64sp</dimen>
     <dimen name="detail_title_size">32sp</dimen>
-    <dimen name="detail_description_size">16sp</dimen>
     <dimen name="line_spacing">4dp</dimen>
 </resources>

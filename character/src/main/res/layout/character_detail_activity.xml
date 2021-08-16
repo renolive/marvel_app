@@ -22,10 +22,10 @@
         android:background="?attr/colorPrimary"
         android:gravity="center"
         android:padding="@dimen/pixel_8"
+        android:text="@string/detail_title_placeholder"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/detail_title_size"
         android:textStyle="bold"
-        android:text="@string/detail_title_placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/character_detail_image"
         tools:text="Black Panther" />
@@ -33,6 +33,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/character_detail_title">
@@ -40,12 +41,35 @@
         <TextView
             android:id="@+id/character_detail_description"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:background="@android:color/white"
             android:padding="@dimen/pixel_8"
-            android:text="-- No Description Available --"
+            android:text="@string/no_description_available"
             android:textSize="@dimen/detail_description_size"
             tools:text="Onslaught was written as a sentient psionic entity created from the consciousness of two mutants: Professor Charles Xavier and Magneto. During a battle between the X-Men and Magneto's Acolytes, Professor Xavier used his telepathic powers to shut down Magneto's mind, rendering him catatonic. It was explained through the Onslaught crossover series that the darkest aspect of Magneto's mind escaped into Xavier's subconscious, where it with Xavier's own darker nature to eventually grow into a separate persona of its own." />
     </ScrollView>
+
+    <View
+        android:id="@+id/character_detail_up"
+        android:layout_width="@dimen/detail_arrow_back_size"
+        android:layout_height="@dimen/detail_arrow_back_size"
+        android:layout_marginStart="@dimen/pixel_8"
+        android:background="@drawable/ic_baseline_arrow_back_24"
+        android:backgroundTint="?attr/colorOnPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/favorite_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/favorite_icon" />
+
+    <View
+        android:id="@+id/favorite_icon"
+        android:layout_width="@dimen/detail_favorite_size"
+        android:layout_height="@dimen/detail_favorite_size"
+        android:layout_marginTop="@dimen/pixel_8"
+        android:layout_marginEnd="@dimen/pixel_8"
+        android:background="@drawable/ic_favorite_unchecked"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
