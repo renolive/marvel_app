@@ -9,17 +9,14 @@ import com.renatoaoliveira.character.presentation.mapper.mapToVO
 import com.renatoaoliveira.character.presentation.model.CharacterVO
 import com.renatoaoliveira.character.presentation.ui.adapter.CharacterAdapter
 import com.renatoaoliveira.character.presentation.ui.decorator.CharacterItemDecorator
-import com.renatoaoliveira.character.presentation.ui.viewholder.BaseCharacterGridFragment2
 import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel.CharacterFavoriteState
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoriteCharactersGridFragment : BaseCharacterGridFragment2(), CharacterViewHolderListener {
+class FavoriteCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHolderListener {
 
     private val favoriteAdapter = CharacterAdapter(this)
 
-//    private val favoriteViewModel: CharacterFavoritesViewModel by viewModel()
     private lateinit var favoriteViewModel: CharacterFavoritesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

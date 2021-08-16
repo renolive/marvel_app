@@ -50,9 +50,7 @@ class CharacterRepository(
     //region WebService
     override suspend fun getCharactersList(offset: Int): CharacterResult<CharacterList> =
         withContext(Dispatchers.IO) {
-            println("### PQP")
             characterServiceAPI.getCharactersList(getQueryParams(offset)).run {
-                println("### list web"+this.isSuccessful)
                 CharacterResult(
                     body()?.data.mapToModel(),
                     code(),

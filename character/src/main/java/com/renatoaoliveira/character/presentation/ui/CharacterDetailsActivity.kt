@@ -1,6 +1,5 @@
 package com.renatoaoliveira.character.presentation.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -50,7 +49,7 @@ class CharacterDetailsActivity : AppCompatActivity() {
 
     private fun configureView() {
         with(binding) {
-            title?.let { characterDetailTitle.text = it }
+            characterDetailTitle.text = characterInfo.name
 
             if (characterInfo.description.isNotEmpty()) {
                 characterDetailDescription.text = characterInfo.description

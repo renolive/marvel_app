@@ -36,7 +36,7 @@ class CharacterAdapter(private val viewHolderListener: CharacterViewHolderListen
                 oldItem: CharacterVO,
                 newItem: CharacterVO
             ): Boolean =
-                oldItem == newItem
+                oldItem.isFavorite == newItem.isFavorite
         }
     }
 }

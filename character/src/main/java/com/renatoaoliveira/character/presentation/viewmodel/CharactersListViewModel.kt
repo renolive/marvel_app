@@ -1,14 +1,14 @@
 package com.renatoaoliveira.character.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.renatoaoliveira.character.domain.model.Character
-import com.renatoaoliveira.character.domain.usecase.ICharacterAddFavoriteUseCase
-import com.renatoaoliveira.character.domain.usecase.ICharacterListUseCase
-import com.renatoaoliveira.character.domain.usecase.ICharacterSearchUseCase
+import com.renatoaoliveira.character.domain.usecase.*
 import com.renatoaoliveira.character.presentation.mapper.mapToVO
+import com.renatoaoliveira.character.presentation.model.CharacterVO
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
@@ -17,6 +17,8 @@ class CharactersListViewModel(
     private val characterListUseCase: ICharacterListUseCase,
     private val characterSearchUseCase: ICharacterSearchUseCase,
     private val characterAddFavoriteUseCase: ICharacterAddFavoriteUseCase,
+    private val characterRemoveFavoriteUseCase: ICharacterRemoveFavoriteUseCase,
+    private val characterGetFavoritesUseCase: ICharacterGetFavoritesUseCase,
     private val dispatcher: CoroutineContext
 ) : ViewModel() {
 
@@ -28,16 +30,75 @@ class CharactersListViewModel(
     private val _characterSearchList = MutableLiveData<CharacterSearchListState>()
     val characterSearchList: LiveData<CharacterSearchListState> get() = _characterSearchList
 
-    private val _characterFavorite = MutableLiveData<CharacterFavoriteState>()
-    val characterFavorite: LiveData<CharacterFavoriteState> get() = _characterFavorite
+    private val _characterFavorites =
+        MutableLiveData<CharacterFavoriteState>(
+            CharacterFavoriteState.Idle
+        )
+    val characterFavorites: LiveData<CharacterFavoriteState> get() = _characterFavorites
+
+    private val _charactersLiveDataMerger = MediatorLiveData<List<CharacterVO>>()
+    val charactersLiveDataMerger: LiveData<List<CharacterVO>> get() = _charactersLiveDataMerger
+
+    init {
+        viewModelScope.launch {
+            characterGetFavoritesUseCase.execute()
+                .flowOn(dispatcher)
+                .onStart {
+                    CharacterFavoritesViewModel.CharacterFavoriteState.Loading
+                }
+                .catch {
+                    CharacterFavoritesViewModel.CharacterFavoriteState.Error
+                }
+                .collectLatest {
+                    _characterFavorites.value =
+                        CharacterFavoriteState.Success(it)
+                }
+        }
+
+        _charactersLiveDataMerger.addSource(_characterList) {
+            if (it is CharacterListState.Success) {
+                val favoriteList =
+                    (_characterFavorites.value as? CharacterFavoriteState.Success)?.list
+                        ?: emptyList()
+                _charactersLiveDataMerger.value = updateCharacterVOList(it.characters, favoriteList)
+            }
+        }
+        _charactersLiveDataMerger.addSource(_characterFavorites) {
+            if (it is CharacterFavoriteState.Success) {
+                val characterList =
+                    (_characterList.value as? CharacterListState.Success)?.characters
+                        ?: return@addSource
+                _charactersLiveDataMerger.value = updateCharacterVOList(characterList, it.list)
+            }
+        }
+    }
+
+    private fun updateCharacterVOList(
+        characters: List<Character>,
+        favorites: List<Character>
+    ): List<CharacterVO> {
+        val favoritesId = favorites.map { it.id }
+        return characters.map { it.mapToVO(it.id in favoritesId) }
+    }
+
+    fun onFavoriteClick(character: Character, shouldMarkAsFavorite: Boolean) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                if (shouldMarkAsFavorite) {
+                    characterAddFavoriteUseCase.execute(character)
+                } else {
+                    characterRemoveFavoriteUseCase.execute(character)
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Um erro ocorreu ao favoritar personagem")
+            }
+        }
+    }
 
     fun fetchList(isFirstPage: Boolean = true) {
-        println("###A")
-
         _characterList.value = CharacterListState.Loading
-        println("###B")
+
         viewModelScope.launch(dispatcher) {
-            println("###1")
             if (isFirstPage) characterListOffset = 0
 
             val res = characterListUseCase.execute(characterListOffset)
@@ -53,33 +114,22 @@ class CharactersListViewModel(
         }
     }
 
-    fun searchCharacter(query: String, isFirstPage: Boolean = true) {
-        _characterSearchList.value = CharacterSearchListState.Loading
-        viewModelScope.launch(dispatcher) {
-            if (isFirstPage) characterListOffset = 0
-            val res = characterSearchUseCase.execute(characterListOffset, query)
-
-            _characterSearchList.value = if (res.success) {
-                characterListOffset += res.data.count
-                CharacterSearchListState.Success(res.data.list)
-            } else {
-                CharacterSearchListState.Error
-            }
-
-            println("### Search " + res.data.count + res.data.list)
-        }
-    }
-
-    fun favoriteCharacter(character: Character) {
-        viewModelScope.launch(dispatcher) {
-            try {
-                characterAddFavoriteUseCase.execute(character)
-            } catch (e: Exception) {
-                Timber.e(e, "Um erro ocorreu ao favoritar personagem")
-                _characterFavorite.value = CharacterFavoriteState.Error
-            }
-        }
-    }
+//    fun searchCharacter(query: String, isFirstPage: Boolean = true) {
+//        _characterSearchList.value = CharacterSearchListState.Loading
+//        viewModelScope.launch(dispatcher) {
+//            if (isFirstPage) characterListOffset = 0
+//            val res = characterSearchUseCase.execute(characterListOffset, query)
+//
+//            _characterSearchList.value = if (res.success) {
+//                characterListOffset += res.data.count
+//                CharacterSearchListState.Success(res.data.list)
+//            } else {
+//                CharacterSearchListState.Error
+//            }
+//
+//            println("### Search " + res.data.count + res.data.list)
+//        }
+//    }
 
     fun resetCharacterList() {
         _characterList.value = CharacterListState.Idle
@@ -87,10 +137,6 @@ class CharactersListViewModel(
 
     fun resetCharacterSearchList() {
         _characterSearchList.value = CharacterSearchListState.Idle
-    }
-
-    fun resetCharacterFavorite() {
-        _characterFavorite.value = CharacterFavoriteState.Idle
     }
 
     sealed class CharacterListState {
@@ -109,6 +155,8 @@ class CharactersListViewModel(
 
     sealed class CharacterFavoriteState {
         object Idle : CharacterFavoriteState()
+        object Loading : CharacterFavoriteState()
         object Error : CharacterFavoriteState()
+        class Success(val list: List<Character>) : CharacterFavoriteState()
     }
 }

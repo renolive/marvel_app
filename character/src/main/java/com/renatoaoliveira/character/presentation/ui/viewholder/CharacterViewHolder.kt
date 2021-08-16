@@ -7,7 +7,6 @@ import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.databinding.ViewHolderCharacterBinding
 import com.renatoaoliveira.character.presentation.model.CharacterVO
 import com.renatoaoliveira.character.presentation.ui.CharacterViewHolderListener
-import com.renatoaoliveira.character.presentation.ui.OnClickFavoriteListener
 
 class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -15,14 +14,12 @@ class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
     fun bind(item: CharacterVO, listener: CharacterViewHolderListener) {
         with(binding) {
             favoriteIcon.setOnClickListener { listener.OnClickFavorite(item) }
-            if (item.isFavorite) {
-                favoriteIcon.background =
-                    ResourcesCompat.getDrawable(
-                        itemView.resources,
-                        R.drawable.ic_favorite_checked,
-                        null
-                    )
-            }
+            val backgroundLayout =
+                if (item.isFavorite) R.drawable.ic_favorite_checked
+                else R.drawable.ic_favorite_unchecked
+            favoriteIcon.background =
+                ResourcesCompat.getDrawable(itemView.resources, backgroundLayout, null)
+
 
             characterName.text = item.name
 

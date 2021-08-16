@@ -47,6 +47,6 @@ val characterModules = module {
     /**
      * ViewModel
      */
-    viewModel { CharactersListViewModel(get(), get(), get(), Dispatchers.Main) }
+    viewModel { CharactersListViewModel(get(), get(), get(), get(), get(), Dispatchers.Main) }
     viewModel { CharacterFavoritesViewModel(get(), get(), get(), Dispatchers.Main) }
 }

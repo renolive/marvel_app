@@ -1,7 +1,6 @@
 package com.renatoaoliveira.marvel.activity
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.renatoaoliveira.character.presentation.ui.FavoriteCharactersGridFragment
@@ -44,22 +43,8 @@ class HomeActivity : AppCompatActivity() {
     private fun configureViews() = with(homeBinding) {
         bottomNavBar.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.home_item -> {
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Selected Home",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    loadHomeFragment()
-                }
-                R.id.favorites_item -> {
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Selected Favorite",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    loadFavoriteFragment()
-                }
+                R.id.home_item -> loadHomeFragment()
+                R.id.favorites_item -> loadFavoriteFragment()
             }
             true
         }
