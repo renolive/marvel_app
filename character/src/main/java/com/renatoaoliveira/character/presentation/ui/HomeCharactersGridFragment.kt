@@ -88,8 +88,12 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     }
 
     private fun observeCharacterMergedData(list: List<CharacterVO>) {
-        updateCharacterList(list)
-        showGridScreen()
+        if (list.isEmpty()) {
+            showEmptyScreen()
+        } else {
+            updateCharacterList(list)
+            showGridScreen()
+        }
     }
 
     private fun updateCharacterList(newCharacterList: List<CharacterVO>) {

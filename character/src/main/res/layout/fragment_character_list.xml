@@ -5,6 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
@@ -34,4 +37,8 @@
     <include
         android:id="@+id/error_offline_screen_include"
         layout="@layout/offline_screen" />
+
+    <include
+        android:id="@+id/empty_screen_include"
+        layout="@layout/empty_screen" />
 </LinearLayout>

@@ -29,40 +29,49 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
         if (checkConnectivity(requireContext())) showErrorScreen() else showOfflineErrorScreen()
     }
 
-    protected fun showErrorScreen() {
+    private fun hideAllScreens() {
         binding?.run {
             swipeRefresh.isVisible = false
             loadingScreenInclude.isVisible = false
             errorOfflineScreenInclude.isVisible = false
+            errorScreenInclude.isVisible = false
+            emptyScreenInclude.isVisible = true
+        }
+    }
+
+    protected fun showEmptyScreen() {
+        binding?.run {
+            hideAllScreens()
+            emptyScreenInclude.isVisible = true
+        }
+    }
+
+    protected fun showErrorScreen() {
+        binding?.run {
+            hideAllScreens()
             errorScreenInclude.isVisible = true
         }
     }
 
     protected fun showOfflineErrorScreen() {
         binding?.run {
-            swipeRefresh.isVisible = false
-            loadingScreenInclude.isVisible = false
-            errorScreenInclude.isVisible = false
+            hideAllScreens()
             errorOfflineScreenInclude.isVisible = true
         }
     }
 
     protected fun showLoadingScreen() {
         binding?.run {
-            swipeRefresh.isVisible = false
-            errorScreenInclude.isVisible = false
-            errorOfflineScreenInclude.isVisible = false
+            hideAllScreens()
             loadingScreenInclude.isVisible = true
         }
     }
 
     protected fun showGridScreen() {
         binding?.run {
+            hideAllScreens()
             swipeRefresh.isVisible = true
-            errorScreenInclude.isVisible = false
-            errorOfflineScreenInclude.isVisible = false
-            loadingScreenInclude.isVisible = false
         }
-
     }
+
 }
