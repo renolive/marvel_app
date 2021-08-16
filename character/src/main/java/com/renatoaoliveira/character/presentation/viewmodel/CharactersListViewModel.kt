@@ -34,7 +34,6 @@ class CharactersListViewModel(
         MutableLiveData<CharacterFavoriteState>(
             CharacterFavoriteState.Idle
         )
-    val characterFavorites: LiveData<CharacterFavoriteState> get() = _characterFavorites
 
     private val _charactersLiveDataMerger = MediatorLiveData<List<CharacterVO>>()
     val charactersLiveDataMerger: LiveData<List<CharacterVO>> get() = _charactersLiveDataMerger
@@ -130,14 +129,6 @@ class CharactersListViewModel(
 //            println("### Search " + res.data.count + res.data.list)
 //        }
 //    }
-
-    fun resetCharacterList() {
-        _characterList.value = CharacterListState.Idle
-    }
-
-    fun resetCharacterSearchList() {
-        _characterSearchList.value = CharacterSearchListState.Idle
-    }
 
     sealed class CharacterListState {
         object Loading : CharacterListState()
