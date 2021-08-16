@@ -11,6 +11,7 @@ import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesVi
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val characterModules = module {
@@ -46,6 +47,6 @@ val characterModules = module {
     /**
      * ViewModel
      */
-    factory { CharactersListViewModel(get(), get(), get(), Dispatchers.Main) }
-    factory { CharacterFavoritesViewModel(get(), get(), get(), Dispatchers.Main) }
+    viewModel { CharactersListViewModel(get(), get(), get(), Dispatchers.Main) }
+    viewModel { CharacterFavoritesViewModel(get(), get(), get(), Dispatchers.Main) }
 }

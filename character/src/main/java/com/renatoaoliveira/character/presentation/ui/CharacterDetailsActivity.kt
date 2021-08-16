@@ -23,7 +23,6 @@ class CharacterDetailsActivity : AppCompatActivity() {
 
     private lateinit var characterInfo: CharacterVO
 
-    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = CharacterDetailActivityBinding.inflate(layoutInflater)

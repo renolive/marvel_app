@@ -32,8 +32,12 @@ class CharactersListViewModel(
     val characterFavorite: LiveData<CharacterFavoriteState> get() = _characterFavorite
 
     fun fetchList(isFirstPage: Boolean = true) {
+        println("###A")
+
         _characterList.value = CharacterListState.Loading
+        println("###B")
         viewModelScope.launch(dispatcher) {
+            println("###1")
             if (isFirstPage) characterListOffset = 0
 
             val res = characterListUseCase.execute(characterListOffset)

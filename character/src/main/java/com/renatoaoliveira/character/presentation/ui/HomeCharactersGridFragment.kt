@@ -6,11 +6,18 @@ import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.presentation.ui.adapter.BottomAdapter
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel.CharacterListState
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeCharactersGridFragment : BaseCharacterGridFragment() {
 
-    override val viewModel: CharactersListViewModel by viewModel()
+//    private val viewModel: CharactersListViewModel by viewModel()
+    private lateinit var viewModel: CharactersListViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = getViewModel()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

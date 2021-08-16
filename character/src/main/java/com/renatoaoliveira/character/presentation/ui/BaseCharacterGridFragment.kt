@@ -25,7 +25,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_list),
     CharacterViewHolderListener {
 
-    protected abstract val viewModel: ViewModel
     protected val favoriteViewModel: CharacterFavoritesViewModel by viewModel()
 
     private var favoriteIdList: List<Int> = emptyList()

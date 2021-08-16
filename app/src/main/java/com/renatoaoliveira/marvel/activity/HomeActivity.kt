@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.renatoaoliveira.character.presentation.ui.FavoriteCharactersGridFragment
 import com.renatoaoliveira.character.presentation.ui.HomeCharactersGridFragment
 import com.renatoaoliveira.marvel.R
 import com.renatoaoliveira.marvel.databinding.ActivityHomeBinding
@@ -13,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var homeBinding: ActivityHomeBinding
 
     private val homeCharactersGridFragment = HomeCharactersGridFragment()
+    private val favoriteCharactersGridFragment = FavoriteCharactersGridFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,15 +31,12 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun loadFavoriteFragment() {
-//        loadFragment(???)
+        loadFragment(favoriteCharactersGridFragment)
     }
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().apply {
             replace(homeBinding.fragmentContainerView.id, fragment)
-//            if (supportFragmentManager.backStackEntryCount > 0) {
-//                addToBackStack("")
-//            }
             commit()
         }
     }
