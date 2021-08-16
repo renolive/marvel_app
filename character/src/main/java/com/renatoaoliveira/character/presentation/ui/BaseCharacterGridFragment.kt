@@ -25,7 +25,7 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
         bottomStatusBinding = null
     }
 
-    protected fun onError() {
+    protected open fun onError() {
         if (checkConnectivity(requireContext())) showErrorScreen() else showOfflineErrorScreen()
     }
 

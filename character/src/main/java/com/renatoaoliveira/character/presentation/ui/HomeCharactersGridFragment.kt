@@ -11,6 +11,8 @@ import com.renatoaoliveira.character.presentation.ui.adapter.CharacterAdapter
 import com.renatoaoliveira.character.presentation.ui.decorator.CharacterItemDecorator
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel.CharacterListState
+import com.renatoaoliveira.common.connection.checkConnectivity
+import com.renatoaoliveira.common.utils.RecyclerViewScrollLoader
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHolderListener {
@@ -20,6 +22,9 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     private val characterAdapter = CharacterAdapter(this)
     private val bottomAdapter = BottomAdapter()
     private val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
+
+    private val recyclerScrollLoader =
+        RecyclerViewScrollLoader(POSITION_THRESHOLD, ::fetchMoreCharacters)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +41,8 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
 
     private fun fetchFirstCharacters() = charactersViewModel.fetchList()
 
+    private fun fetchMoreCharacters() = charactersViewModel.fetchList(false)
+
     private fun configureView() {
         binding?.run {
             characterGrid.itemAnimator = null
@@ -49,6 +56,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
                     }
                 }
             }
+            characterGrid.addOnScrollListener(recyclerScrollLoader)
         }
     }
 
@@ -62,10 +70,12 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     private fun observeCharactersListState(state: CharacterListState) {
         when (state) {
             is CharacterListState.Loading -> {
-                showLoadingScreen()
-            }
-            is CharacterListState.Success -> {
-                showGridScreen()
+                if (characterAdapter.currentList.isEmpty()) {
+                    showLoadingScreen()
+                } else {
+                    bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.LOADING)
+                }
+                return
             }
             is CharacterListState.Error -> {
                 onError()
@@ -74,19 +84,17 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
                 // Do nothing
             }
         }
+        recyclerScrollLoader.setNotLoading()
     }
 
     private fun observeCharacterMergedData(list: List<CharacterVO>) {
-        println("###99 " + list)
         updateCharacterList(list)
+        showGridScreen()
     }
 
-    //    private fun updateCharacterList(characterList: List<Character>) {
-    private fun updateCharacterList(characterList: List<CharacterVO>) {
-//        characterAdapter.submitList(characterList.map { it.mapToVO(false) })
-        characterAdapter.submitList(characterList)
-        println("###88 " + characterAdapter.currentList)
-        bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.LOADING)
+    private fun updateCharacterList(newCharacterList: List<CharacterVO>) {
+        characterAdapter.submitList(newCharacterList)
+        bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.EMPTY)
     }
 
     override fun OnClickFavorite(characterVO: CharacterVO) {
@@ -95,5 +103,18 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
 
     override fun OnViewHolderClick(character: CharacterVO) {
         startActivity(CharacterDetailsActivity.newIntent(requireContext(), character))
+    }
+
+    override fun onError() {
+        when {
+            characterAdapter.currentList.isEmpty() -> super.onError()
+            checkConnectivity(requireContext()) ->
+                bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.OFFLINE)
+            else -> bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.ERROR)
+        }
+    }
+
+    companion object {
+        const val POSITION_THRESHOLD = 1
     }
 }

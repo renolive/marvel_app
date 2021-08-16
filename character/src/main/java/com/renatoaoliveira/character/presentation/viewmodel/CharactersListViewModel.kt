@@ -24,11 +24,13 @@ class CharactersListViewModel(
 
     private var characterListOffset = 0
 
+    private var isFirstPage = true
+
     private val _characterList = MutableLiveData<CharacterListState>()
     val characterList: LiveData<CharacterListState> get() = _characterList
 
-    private val _characterSearchList = MutableLiveData<CharacterSearchListState>()
-    val characterSearchList: LiveData<CharacterSearchListState> get() = _characterSearchList
+//    private val _characterSearchList = MutableLiveData<CharacterSearchListState>()
+//    val characterSearchList: LiveData<CharacterSearchListState> get() = _characterSearchList
 
     private val _characterFavorites =
         MutableLiveData<CharacterFavoriteState>(
@@ -59,25 +61,37 @@ class CharactersListViewModel(
                 val favoriteList =
                     (_characterFavorites.value as? CharacterFavoriteState.Success)?.list
                         ?: emptyList()
-                _charactersLiveDataMerger.value = updateCharacterVOList(it.characters, favoriteList)
+                val currentList =
+                    if (isFirstPage) emptyList() else _charactersLiveDataMerger.value
+                        ?: emptyList()
+                val newCharacterList = currentList + getCharacterVOList(it.characters, favoriteList)
+                _charactersLiveDataMerger.value = newCharacterList
             }
         }
         _charactersLiveDataMerger.addSource(_characterFavorites) {
             if (it is CharacterFavoriteState.Success) {
-                val characterList =
-                    (_characterList.value as? CharacterListState.Success)?.characters
-                        ?: return@addSource
-                _charactersLiveDataMerger.value = updateCharacterVOList(characterList, it.list)
+                if (isFirstPage) return@addSource
+                val currentList = _charactersLiveDataMerger?.value ?: return@addSource
+                val newCharacterList = updateCharacterVOList(currentList, it.list)
+                _charactersLiveDataMerger.value = newCharacterList
             }
         }
     }
 
-    private fun updateCharacterVOList(
+    private fun getCharacterVOList(
         characters: List<Character>,
         favorites: List<Character>
     ): List<CharacterVO> {
         val favoritesId = favorites.map { it.id }
         return characters.map { it.mapToVO(it.id in favoritesId) }
+    }
+
+    private fun updateCharacterVOList(
+        characters: List<CharacterVO>,
+        favorites: List<Character>
+    ): MutableList<CharacterVO> {
+        val favoritesId = favorites.map { it.id }
+        return characters.map { it.apply { isFavorite = it.id in favoritesId } }.toMutableList()
     }
 
     fun onFavoriteClick(character: Character, shouldMarkAsFavorite: Boolean) {
@@ -98,7 +112,10 @@ class CharactersListViewModel(
         _characterList.value = CharacterListState.Loading
 
         viewModelScope.launch(dispatcher) {
-            if (isFirstPage) characterListOffset = 0
+            this@CharactersListViewModel.isFirstPage = isFirstPage
+            if (isFirstPage) {
+                characterListOffset = 0
+            }
 
             val res = characterListUseCase.execute(characterListOffset)
 
@@ -109,6 +126,7 @@ class CharactersListViewModel(
                 CharacterListState.Error
             }
 
+            //TODO remover
             println("### List " + res.data.list)
         }
     }
