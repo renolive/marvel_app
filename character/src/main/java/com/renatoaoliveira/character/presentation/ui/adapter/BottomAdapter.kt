@@ -2,12 +2,14 @@ package com.renatoaoliveira.character.presentation.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.presentation.ui.viewholder.BottomStatusViewHolder
 
-class BottomAdapter : RecyclerView.Adapter<BottomStatusViewHolder>() {
+class BottomAdapter : ListAdapter<BottomAdapter.BOTTOM_STATUS, BottomStatusViewHolder>(
+    diffUtilCallback
+) {
 
     private var currentStatus: BOTTOM_STATUS = BOTTOM_STATUS.EMPTY
 
@@ -24,7 +26,7 @@ class BottomAdapter : RecyclerView.Adapter<BottomStatusViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: BottomStatusViewHolder, position: Int) {
-//        if(currentStatus == BOTTOM_STATUS.EMPTY) holder.itemView.isVisible = false
+        // Do nothing
     }
 
     override fun getItemCount(): Int = if (currentStatus == BOTTOM_STATUS.EMPTY) 0 else 1
@@ -42,5 +44,21 @@ class BottomAdapter : RecyclerView.Adapter<BottomStatusViewHolder>() {
         LOADING,
         ERROR,
         OFFLINE
+    }
+
+    companion object {
+        private val diffUtilCallback = object : DiffUtil.ItemCallback<BOTTOM_STATUS>() {
+            override fun areItemsTheSame(
+                oldItem: BOTTOM_STATUS,
+                newItem: BOTTOM_STATUS
+            ): Boolean =
+                false
+
+            override fun areContentsTheSame(
+                oldItem: BOTTOM_STATUS,
+                newItem: BOTTOM_STATUS
+            ): Boolean =
+                false
+        }
     }
 }

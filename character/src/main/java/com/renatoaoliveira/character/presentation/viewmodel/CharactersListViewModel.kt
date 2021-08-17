@@ -63,18 +63,14 @@ class CharactersListViewModel(
                 val currentList =
                     if (isFirstPage) emptyList() else _charactersLiveDataMerger.value
                         ?: emptyList()
-                val newCharacterList = currentList + getCharacterVOList(it.characters, favoriteList)
-                _charactersLiveDataMerger.value = newCharacterList
-                //todo
-                println("###LIST AA " + newCharacterList.size)
+                _charactersLiveDataMerger.value =
+                    currentList + getCharacterVOList(it.characters, favoriteList)
             }
         }
         _charactersLiveDataMerger.addSource(_characterFavorites) {
             if (it is CharacterFavoriteState.Success) {
-                if (isFirstPage) return@addSource
-                val currentList = _charactersLiveDataMerger?.value ?: return@addSource
-                val newCharacterList = updateCharacterVOList(currentList, it.list)
-                _charactersLiveDataMerger.value = newCharacterList
+                val currentList = _charactersLiveDataMerger.value ?: return@addSource
+                _charactersLiveDataMerger.value = updateCharacterVOList(currentList, it.list)
             }
         }
     }
@@ -90,9 +86,9 @@ class CharactersListViewModel(
     private fun updateCharacterVOList(
         characters: List<CharacterVO>,
         favorites: List<Character>
-    ): MutableList<CharacterVO> {
+    ): List<CharacterVO> {
         val favoritesId = favorites.map { it.id }
-        return characters.map { it.apply { isFavorite = it.id in favoritesId } }.toMutableList()
+        return characters.map { it.apply { isFavorite = it.id in favoritesId } }
     }
 
     fun onFavoriteClick(character: Character, shouldMarkAsFavorite: Boolean) {
@@ -110,7 +106,6 @@ class CharactersListViewModel(
     }
 
     fun fetchFirstCharacters(query: String) {
-        isFirstPage = true
         characterListOffset = 0
         totalItems = Int.MAX_VALUE
         this.query = query
@@ -119,12 +114,13 @@ class CharactersListViewModel(
 
     fun fetchNextCharacters() {
         if (characterListOffset < totalItems) {
-            isFirstPage = false
             fetchCharacters()
         }
     }
 
     private fun fetchCharacters() {
+        isFirstPage = characterListOffset == 0
+
         _characterList.value = CharacterListState.Loading
 
         viewModelScope.launch(dispatcher) {

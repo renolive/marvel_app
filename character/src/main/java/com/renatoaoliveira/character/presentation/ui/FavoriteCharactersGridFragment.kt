@@ -40,6 +40,8 @@ class FavoriteCharactersGridFragment : BaseCharacterGridFragment(), CharacterVie
             characterGrid.layoutManager = GridLayoutManager(requireContext(), 2)
 
             searchView.isVisible = false
+
+            swipeRefresh.setOnRefreshListener { swipeRefresh.isRefreshing = false }
         }
     }
 
@@ -55,8 +57,12 @@ class FavoriteCharactersGridFragment : BaseCharacterGridFragment(), CharacterVie
                 showLoadingScreen()
             }
             is CharacterFavoriteState.Success -> {
-                showGridScreen()
                 updateFavoriteList(state.list)
+                if (state.list.isEmpty()) {
+                    showEmptyScreen()
+                } else {
+                    showGridScreen()
+                }
             }
             is CharacterFavoriteState.Error -> {
                 onError()

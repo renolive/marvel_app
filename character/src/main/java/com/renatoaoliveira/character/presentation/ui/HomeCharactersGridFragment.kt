@@ -6,6 +6,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.presentation.mapper.mapToModel
@@ -26,7 +27,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
 
     private val characterAdapter = CharacterAdapter(this)
     private val bottomAdapter = BottomAdapter()
-//    private val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
+    private val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
 
     private val recyclerScrollLoader =
         RecyclerViewScrollLoader(POSITION_THRESHOLD, ::fetchMoreCharacters)
@@ -53,8 +54,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     private fun configureView() {
         binding?.run {
             characterGrid.itemAnimator = null
-//            characterGrid.adapter = concatAdapter
-            characterGrid.adapter = characterAdapter
+            characterGrid.adapter = concatAdapter
             characterGrid.addItemDecoration(CharacterItemDecorator())
             characterGrid.layoutManager = GridLayoutManager(requireContext(), 2).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
