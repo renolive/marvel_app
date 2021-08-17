@@ -6,7 +6,6 @@ import com.bumptech.glide.Glide
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.databinding.ViewHolderCharacterBinding
 import com.renatoaoliveira.character.presentation.model.CharacterVO
-import com.renatoaoliveira.character.presentation.ui.CharacterViewHolderListener
 
 class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
     RecyclerView.ViewHolder(binding.root) {

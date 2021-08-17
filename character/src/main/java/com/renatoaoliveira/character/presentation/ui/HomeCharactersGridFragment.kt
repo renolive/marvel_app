@@ -1,17 +1,22 @@
 package com.renatoaoliveira.character.presentation.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.ConcatAdapter
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
+import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.presentation.mapper.mapToModel
 import com.renatoaoliveira.character.presentation.model.CharacterVO
 import com.renatoaoliveira.character.presentation.ui.adapter.BottomAdapter
 import com.renatoaoliveira.character.presentation.ui.adapter.CharacterAdapter
 import com.renatoaoliveira.character.presentation.ui.decorator.CharacterItemDecorator
+import com.renatoaoliveira.character.presentation.ui.viewholder.CharacterViewHolderListener
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharactersListViewModel.CharacterListState
-import com.renatoaoliveira.common.connection.checkConnectivity
+import com.renatoaoliveira.common.connection.hasConnection
 import com.renatoaoliveira.common.utils.RecyclerViewScrollLoader
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -21,7 +26,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
 
     private val characterAdapter = CharacterAdapter(this)
     private val bottomAdapter = BottomAdapter()
-    private val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
+//    private val concatAdapter = ConcatAdapter(characterAdapter, bottomAdapter)
 
     private val recyclerScrollLoader =
         RecyclerViewScrollLoader(POSITION_THRESHOLD, ::fetchMoreCharacters)
@@ -34,19 +39,22 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fetchFirstCharacters()
+        fetchInitialCharacters()
         configureView()
         configureObservers()
     }
 
-    private fun fetchFirstCharacters() = charactersViewModel.fetchList()
+    private fun fetchInitialCharacters(query: String = "") {
+        charactersViewModel.fetchFirstCharacters(query)
+    }
 
-    private fun fetchMoreCharacters() = charactersViewModel.fetchList(false)
+    private fun fetchMoreCharacters() = charactersViewModel.fetchNextCharacters()
 
     private fun configureView() {
         binding?.run {
             characterGrid.itemAnimator = null
-            characterGrid.adapter = concatAdapter
+//            characterGrid.adapter = concatAdapter
+            characterGrid.adapter = characterAdapter
             characterGrid.addItemDecoration(CharacterItemDecorator())
             characterGrid.layoutManager = GridLayoutManager(requireContext(), 2).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -57,6 +65,25 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
                 }
             }
             characterGrid.addOnScrollListener(recyclerScrollLoader)
+
+            searchView.setOnCloseListener {
+                fetchInitialCharacters(searchView.query.toString())
+                false
+            }
+            searchView.findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
+                .setOnEditorActionListener { searchBarTextView, actionCode, _ ->
+                    val query = searchBarTextView.text.toString()
+                    if (actionCode == EditorInfo.IME_ACTION_SEARCH && query.isNotEmpty()) {
+                        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                        (imm as InputMethodManager).hideSoftInputFromWindow(
+                            searchBarTextView.windowToken,
+                            0
+                        )
+                        searchView.clearFocus()
+                        fetchInitialCharacters(searchView.query.toString())
+                        false
+                    } else false
+                }
         }
     }
 
@@ -70,7 +97,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     private fun observeCharactersListState(state: CharacterListState) {
         when (state) {
             is CharacterListState.Loading -> {
-                if (characterAdapter.currentList.isEmpty()) {
+                if (charactersViewModel.isFirstPage) {
                     showLoadingScreen()
                 } else {
                     bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.LOADING)
@@ -112,9 +139,9 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     override fun onError() {
         when {
             characterAdapter.currentList.isEmpty() -> super.onError()
-            checkConnectivity(requireContext()) ->
-                bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.OFFLINE)
-            else -> bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.ERROR)
+            hasConnection(requireContext()) ->
+                bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.ERROR)
+            else -> bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.OFFLINE)
         }
     }
 

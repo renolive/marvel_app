@@ -1,6 +1,7 @@
-package com.renatoaoliveira.character.presentation.ui
+package com.renatoaoliveira.character.presentation.ui.viewholder
 
 import com.renatoaoliveira.character.presentation.model.CharacterVO
+import com.renatoaoliveira.character.presentation.ui.OnClickFavoriteListener
 
 interface CharacterViewHolderListener : OnClickFavoriteListener {
 

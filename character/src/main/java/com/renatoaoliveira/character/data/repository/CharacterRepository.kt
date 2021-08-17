@@ -4,7 +4,6 @@ import com.example.android.core.BuildConfig
 import com.renatoaoliveira.character.data.mapper.mapToEntity
 import com.renatoaoliveira.character.data.mapper.mapToModel
 import com.renatoaoliveira.character.data.repository.local.dao.CharacterFavoriteDao
-import com.renatoaoliveira.character.data.repository.local.entity.CharacterFavoriteEntity
 import com.renatoaoliveira.character.data.repository.remote.api.CharacterServiceAPI
 import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.domain.model.CharacterList
@@ -48,24 +47,12 @@ class CharacterRepository(
     //endregion
 
     //region WebService
-    override suspend fun getCharactersList(offset: Int): CharacterResult<CharacterList> =
-        withContext(Dispatchers.IO) {
-            characterServiceAPI.getCharactersList(getQueryParams(offset)).run {
-                CharacterResult(
-                    body()?.data.mapToModel(),
-                    code(),
-                    message(),
-                    isSuccessful
-                )
-            }
-        }
-
-    override suspend fun searchCharacters(
+    override suspend fun getCharactersList(
         offset: Int,
         query: String
     ): CharacterResult<CharacterList> =
         withContext(Dispatchers.IO) {
-            characterServiceAPI.searchCharacters(getSearchQueryParams(offset, query)).run {
+            characterServiceAPI.getCharactersList(getQueryParams(offset, query)).run {
                 CharacterResult(
                     body()?.data.mapToModel(),
                     code(),
@@ -81,21 +68,17 @@ class CharacterRepository(
     }
 
     @Synchronized
-    private fun getQueryParams(offset: Int): Map<String, String> {
+    private fun getQueryParams(offset: Int, query: String): Map<String, String> {
         timeStamp += 1L
         updateHash()
 
-        return mapOf(
+        return mutableMapOf(
             TIME_STAMP_QUERY_NAME to timeStamp.toString(),
             API_KEY_QUERY_NAME to apikey,
             HASH_QUERY_NAME to hash,
-            OFFSET_QUERY_NAME to offset.toString()
-        )
-    }
-
-    private fun getSearchQueryParams(offset: Int, query: String): Map<String, String> {
-        return getQueryParams(offset).toMutableMap().apply {
-            put(SEARCH_QUERY_NAME, query)
+            OFFSET_QUERY_NAME to offset.toString(),
+        ).apply {
+            if (query.isNotEmpty()) put(SEARCH_QUERY_NAME, query)
         }
     }
 

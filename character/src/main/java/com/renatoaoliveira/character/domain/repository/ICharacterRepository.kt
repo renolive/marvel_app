@@ -11,7 +11,5 @@ interface ICharacterRepository {
 
     fun getCharacterFavorites(): Flow<List<Character>>
 
-    suspend fun getCharactersList(offset: Int): CharacterResult<CharacterList>
-
-    suspend fun searchCharacters(offset: Int, query: String): CharacterResult<CharacterList>
+    suspend fun getCharactersList(offset: Int, query: String): CharacterResult<CharacterList>
 }

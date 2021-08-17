@@ -2,6 +2,7 @@ package com.renatoaoliveira.character.presentation.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import com.renatoaoliveira.character.domain.model.Character
 import com.renatoaoliveira.character.presentation.mapper.mapToModel
@@ -9,6 +10,7 @@ import com.renatoaoliveira.character.presentation.mapper.mapToVO
 import com.renatoaoliveira.character.presentation.model.CharacterVO
 import com.renatoaoliveira.character.presentation.ui.adapter.CharacterAdapter
 import com.renatoaoliveira.character.presentation.ui.decorator.CharacterItemDecorator
+import com.renatoaoliveira.character.presentation.ui.viewholder.CharacterViewHolderListener
 import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel
 import com.renatoaoliveira.character.presentation.viewmodel.CharacterFavoritesViewModel.CharacterFavoriteState
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -36,6 +38,8 @@ class FavoriteCharactersGridFragment : BaseCharacterGridFragment(), CharacterVie
             characterGrid.adapter = favoriteAdapter
             characterGrid.addItemDecoration(CharacterItemDecorator())
             characterGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+
+            searchView.isVisible = false
         }
     }
 

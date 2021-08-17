@@ -8,7 +8,7 @@ import android.os.Build
 /**
  * Reference: https://www.geeksforgeeks.org/how-to-check-internet-connection-in-kotlin/
  */
-fun checkConnectivity(context: Context): Boolean {
+fun hasConnection(context: Context): Boolean {
 
     // register activity with the connectivity manager service
     val connectivityManager =

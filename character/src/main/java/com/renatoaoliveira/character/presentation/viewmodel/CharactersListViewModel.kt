@@ -15,7 +15,6 @@ import kotlin.coroutines.CoroutineContext
 
 class CharactersListViewModel(
     private val characterListUseCase: ICharacterListUseCase,
-    private val characterSearchUseCase: ICharacterSearchUseCase,
     private val characterAddFavoriteUseCase: ICharacterAddFavoriteUseCase,
     private val characterRemoveFavoriteUseCase: ICharacterRemoveFavoriteUseCase,
     private val characterGetFavoritesUseCase: ICharacterGetFavoritesUseCase,
@@ -23,14 +22,14 @@ class CharactersListViewModel(
 ) : ViewModel() {
 
     private var characterListOffset = 0
+    private var query = ""
+    private var totalItems = Int.MAX_VALUE
 
-    private var isFirstPage = true
+    var isFirstPage = true
+        private set
 
     private val _characterList = MutableLiveData<CharacterListState>()
     val characterList: LiveData<CharacterListState> get() = _characterList
-
-//    private val _characterSearchList = MutableLiveData<CharacterSearchListState>()
-//    val characterSearchList: LiveData<CharacterSearchListState> get() = _characterSearchList
 
     private val _characterFavorites =
         MutableLiveData<CharacterFavoriteState>(
@@ -66,6 +65,8 @@ class CharactersListViewModel(
                         ?: emptyList()
                 val newCharacterList = currentList + getCharacterVOList(it.characters, favoriteList)
                 _charactersLiveDataMerger.value = newCharacterList
+                //todo
+                println("###LIST AA " + newCharacterList.size)
             }
         }
         _charactersLiveDataMerger.addSource(_characterFavorites) {
@@ -108,19 +109,31 @@ class CharactersListViewModel(
         }
     }
 
-    fun fetchList(isFirstPage: Boolean = true) {
+    fun fetchFirstCharacters(query: String) {
+        isFirstPage = true
+        characterListOffset = 0
+        totalItems = Int.MAX_VALUE
+        this.query = query
+        fetchCharacters()
+    }
+
+    fun fetchNextCharacters() {
+        if (characterListOffset < totalItems) {
+            isFirstPage = false
+            fetchCharacters()
+        }
+    }
+
+    private fun fetchCharacters() {
         _characterList.value = CharacterListState.Loading
 
         viewModelScope.launch(dispatcher) {
-            this@CharactersListViewModel.isFirstPage = isFirstPage
-            if (isFirstPage) {
-                characterListOffset = 0
-            }
 
-            val res = characterListUseCase.execute(characterListOffset)
+            val res = characterListUseCase.execute(characterListOffset, query)
 
             _characterList.value = if (res.success) {
                 characterListOffset += res.data.count
+                totalItems = res.data.total
                 CharacterListState.Success(res.data.list)
             } else {
                 CharacterListState.Error
@@ -131,41 +144,14 @@ class CharactersListViewModel(
         }
     }
 
-//    fun searchCharacter(query: String, isFirstPage: Boolean = true) {
-//        _characterSearchList.value = CharacterSearchListState.Loading
-//        viewModelScope.launch(dispatcher) {
-//            if (isFirstPage) characterListOffset = 0
-//            val res = characterSearchUseCase.execute(characterListOffset, query)
-//
-//            _characterSearchList.value = if (res.success) {
-//                characterListOffset += res.data.count
-//                CharacterSearchListState.Success(res.data.list)
-//            } else {
-//                CharacterSearchListState.Error
-//            }
-//
-//            println("### Search " + res.data.count + res.data.list)
-//        }
-//    }
-
     sealed class CharacterListState {
         object Loading : CharacterListState()
-        object Idle : CharacterListState()
         object Error : CharacterListState()
         data class Success(val characters: List<Character>) : CharacterListState()
     }
 
-    sealed class CharacterSearchListState {
-        object Loading : CharacterSearchListState()
-        object Idle : CharacterSearchListState()
-        object Error : CharacterSearchListState()
-        data class Success(val characters: List<Character>) : CharacterSearchListState()
-    }
-
     sealed class CharacterFavoriteState {
         object Idle : CharacterFavoriteState()
-        object Loading : CharacterFavoriteState()
-        object Error : CharacterFavoriteState()
         class Success(val list: List<Character>) : CharacterFavoriteState()
     }
 }

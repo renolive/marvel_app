@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.renatoaoliveira.character.R
 import com.renatoaoliveira.character.databinding.BottomStatusLoadBinding
 import com.renatoaoliveira.character.databinding.FragmentCharacterListBinding
-import com.renatoaoliveira.common.connection.checkConnectivity
+import com.renatoaoliveira.common.connection.hasConnection
 
 abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_list) {
 
@@ -26,7 +26,7 @@ abstract class BaseCharacterGridFragment : Fragment(R.layout.fragment_character_
     }
 
     protected open fun onError() {
-        if (checkConnectivity(requireContext())) showErrorScreen() else showOfflineErrorScreen()
+        if (hasConnection(requireContext())) showErrorScreen() else showOfflineErrorScreen()
     }
 
     private fun hideAllScreens() {

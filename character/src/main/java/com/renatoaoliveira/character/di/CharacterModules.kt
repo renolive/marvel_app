@@ -39,7 +39,6 @@ val characterModules = module {
      * UseCase
      */
     factory<ICharacterListUseCase> { CharacterListUseCase(get()) }
-    factory<ICharacterSearchUseCase> { CharacterSearchUseCase(get()) }
     factory<ICharacterAddFavoriteUseCase> { CharacterAddFavoriteUseCase(get()) }
     factory<ICharacterRemoveFavoriteUseCase> { CharacterRemoveFavoriteUseCase(get()) }
     factory<ICharacterGetFavoritesUseCase> { CharacterGetFavoritesUseCase(get()) }
@@ -47,6 +46,6 @@ val characterModules = module {
     /**
      * ViewModel
      */
-    viewModel { CharactersListViewModel(get(), get(), get(), get(), get(), Dispatchers.Main) }
+    viewModel { CharactersListViewModel(get(), get(), get(), get(), Dispatchers.Main) }
     viewModel { CharacterFavoritesViewModel(get(), get(), get(), Dispatchers.Main) }
 }
