@@ -35,7 +35,7 @@ open class CharacterFavoritesViewModel(
                     CharacterFavoriteState.Loading
                 }
                 .catch {
-                    CharacterFavoriteState.Error
+                    _characterFavorites.value = CharacterFavoriteState.Error
                 }
                 .collectLatest {
                     _characterFavorites.value = CharacterFavoriteState.Success(it)
@@ -44,7 +44,7 @@ open class CharacterFavoritesViewModel(
     }
 
     fun onFavoriteClick(character: Character, shouldMarkAsFavorite: Boolean) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch {
             try {
                 if (shouldMarkAsFavorite) {
                     characterAddFavoriteUseCase.execute(character)

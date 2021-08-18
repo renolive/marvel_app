@@ -13,10 +13,15 @@ class CharacterListUseCase(
             repository.getCharactersList(offset, query)
         } catch (e: Exception) {
             CharacterResult(
-                data = CharacterList(-1, -1, -1, emptyList()),
-                statusCode = 0,
+                data = CHARACTER_LIST_ON_ERROR,
+                statusCode = STATUS_CODE_ON_ERROR,
                 message = e.message.orEmpty(),
                 false
             )
         }
+
+    companion object {
+        val CHARACTER_LIST_ON_ERROR = CharacterList(-1, -1, -1, emptyList())
+        val STATUS_CODE_ON_ERROR = 0
+    }
 }
