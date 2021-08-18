@@ -124,19 +124,19 @@ class CharactersListViewModel(
         _characterList.value = CharacterListState.Loading
 
         viewModelScope.launch(dispatcher) {
+            try {
+                val res = characterListUseCase.execute(characterListOffset, query)
 
-            val res = characterListUseCase.execute(characterListOffset, query)
-
-            _characterList.value = if (res.success) {
-                characterListOffset += res.data.count
-                totalItems = res.data.total
-                CharacterListState.Success(res.data.list)
-            } else {
-                CharacterListState.Error
+                _characterList.value = if (res.success) {
+                    characterListOffset += res.data.count
+                    totalItems = res.data.total
+                    CharacterListState.Success(res.data.list)
+                } else {
+                    CharacterListState.Error
+                }
+            } catch (e: Exception) {
+                _characterList.value = CharacterListState.Error
             }
-
-            //TODO remover
-            println("### List " + res.data.list)
         }
     }
 
