@@ -24,9 +24,7 @@ class CharacterViewHolder(private val binding: ViewHolderCharacterBinding) :
 
             characterImage.setOnClickListener { listener.OnViewHolderClick(item) }
             Glide.with(itemView.context)
-//                .load(item.thumbnailUrl)
-                //TODO remover
-                .load("")
+                .load(item.thumbnailUrl)
                 .centerCrop()
                 .placeholder(R.drawable.iron_man_placeholder)
                 .dontAnimate()

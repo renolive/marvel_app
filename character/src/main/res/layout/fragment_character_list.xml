@@ -22,7 +22,7 @@
             android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/holo_red_light"
+            android:background="@color/list_screen_background"
             android:padding="@dimen/pixel_8"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

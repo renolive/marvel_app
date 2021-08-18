@@ -84,6 +84,10 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
                         false
                     } else false
                 }
+
+            swipeRefresh.setOnRefreshListener {
+                fetchInitialCharacters()
+            }
         }
     }
 
@@ -98,6 +102,7 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
         when (state) {
             is CharacterListState.Loading -> {
                 if (charactersViewModel.isFirstPage) {
+                    if (binding?.swipeRefresh?.isRefreshing == true) return
                     showLoadingScreen()
                 } else {
                     bottomAdapter.setStatus(BottomAdapter.BOTTOM_STATUS.LOADING)
@@ -115,6 +120,8 @@ class HomeCharactersGridFragment : BaseCharacterGridFragment(), CharacterViewHol
     }
 
     private fun observeCharacterMergedData(list: List<CharacterVO>) {
+        binding?.swipeRefresh?.isRefreshing = false
+
         if (list.isEmpty()) {
             showEmptyScreen()
         } else {
