@@ -6,8 +6,8 @@
 
         <activity
             android:name=".presentation.ui.CharacterDetailsActivity"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
     </application>
 
 </manifest>

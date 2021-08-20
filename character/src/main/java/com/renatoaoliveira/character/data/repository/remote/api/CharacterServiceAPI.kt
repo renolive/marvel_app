@@ -13,13 +13,5 @@ interface CharacterServiceAPI {
     suspend fun getCharactersList(
         @QueryMap params: Map<String, String>
     ): Response<CharactersListResponse>
-
-    /**
-     * API service to fetch list of characters by start name
-     */
-    @GET("/v1/public/characters")
-    suspend fun searchCharacters(
-        @QueryMap params: Map<String, String>
-    ): Response<CharactersListResponse>
 }
 
